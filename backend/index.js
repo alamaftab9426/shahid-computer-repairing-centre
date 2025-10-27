@@ -1,3 +1,4 @@
+// index.js
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -9,31 +10,24 @@ const { Server } = require("socket.io");
 const app = express();
 const server = http.createServer(app);
 
+//  Setup Socket.IO
 const io = new Server(server, {
   cors: { origin: "*" },
 });
-
 io.on("connection", (socket) => {
   console.log("New client connected:", socket.id);
 });
 app.set("io", io);
 
-// ✅ CORS configuration
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://luxury-alfajores-7049a1.netlify.app", // your Netlify frontend
-];
+// Allowed origins (from .env FRONTEND_URL)
+const allowedOrigins = process.env.FRONTEND_URL.split(",");
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps or curl)
       if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) === -1) {
-        const msg = `This site ${origin} does not have access.`;
-        return callback(new Error(msg), false);
-      }
-      return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error("CORS not allowed for this origin: " + origin), false);
     },
     credentials: true,
   })
@@ -65,17 +59,14 @@ app.use("/api", CctvRoutes);
 
 // Test Route
 app.get("/", (req, res) => {
-  res.send("Server is running...");
+  res.send("✅ Server is running...");
 });
 
 // Database Connection
 mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(process.env.MONGO_URI)
   .then(() => {
     const PORT = process.env.PORT || 5000;
-    server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
   })
-  .catch((err) => console.error(" MongoDB Error:", err));
+  .catch((err) => console.error("❌ MongoDB Error:", err));
