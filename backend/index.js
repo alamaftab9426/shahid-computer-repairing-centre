@@ -1,4 +1,3 @@
-// index.js
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -10,7 +9,7 @@ const { Server } = require("socket.io");
 const app = express();
 const server = http.createServer(app);
 
-//  Setup Socket.IO
+// ✅ Socket.IO
 const io = new Server(server, {
   cors: { origin: "*" },
 });
@@ -19,7 +18,7 @@ io.on("connection", (socket) => {
 });
 app.set("io", io);
 
-// Allowed origins (from .env FRONTEND_URL)
+// ✅ CORS Setup using .env
 const allowedOrigins = process.env.FRONTEND_URL.split(",");
 
 app.use(
@@ -33,12 +32,12 @@ app.use(
   })
 );
 
-// Middlewares
+// ✅ Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// Routes
+// ✅ Routes
 const authRoutes = require("./routes/authRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const serviceRoutes = require("./routes/serviceRoute");
@@ -57,12 +56,12 @@ app.use("/api/user", UserProfileRoutes);
 app.use("/api", LaptopRoutes);
 app.use("/api", CctvRoutes);
 
-// Test Route
+// ✅ Test Route
 app.get("/", (req, res) => {
   res.send("✅ Server is running...");
 });
 
-// Database Connection
+// ✅ Database connection
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
