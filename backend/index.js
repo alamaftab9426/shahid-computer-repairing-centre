@@ -9,7 +9,7 @@ const { Server } = require("socket.io");
 const app = express();
 const server = http.createServer(app);
 
-// ✅ Socket.IO
+// Socket.IO
 const io = new Server(server, {
   cors: { origin: "*" },
 });
@@ -18,26 +18,34 @@ io.on("connection", (socket) => {
 });
 app.set("io", io);
 
-// ✅ CORS Setup using .env
-const allowedOrigins = process.env.FRONTEND_URL.split(",");
+// CORS Setup using .env
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://luxury-alfajores-7049a1.netlify.app",
+  "https://fancy-faloodeh-dd879e.netlify.app"  // new Netlify site added
+];
+
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) return callback(null, true);
-      return callback(new Error("CORS not allowed for this origin: " + origin), false);
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
     },
     credentials: true,
   })
 );
 
-// ✅ Middlewares
+
+// Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// ✅ Routes
+//Routes
 const authRoutes = require("./routes/authRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const serviceRoutes = require("./routes/serviceRoute");
@@ -56,16 +64,16 @@ app.use("/api/user", UserProfileRoutes);
 app.use("/api", LaptopRoutes);
 app.use("/api", CctvRoutes);
 
-// ✅ Test Route
+// Test Route
 app.get("/", (req, res) => {
-  res.send("✅ Server is running...");
+  res.send(" Server is running...");
 });
 
-// ✅ Database connection
+// Database connection
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     const PORT = process.env.PORT || 5000;
-    server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+    server.listen(PORT, () => console.log(` Server running on port ${PORT}`));
   })
-  .catch((err) => console.error("❌ MongoDB Error:", err));
+  .catch((err) => console.error(" MongoDB Error:", err));
