@@ -4,7 +4,7 @@ require("dotenv").config();
 
 const User = require("./models/User"); // adjust path if needed
 
-// ✅ Connect to MongoDB
+// Connect to MongoDB
 mongoose
   .connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
