@@ -9,76 +9,60 @@ const { Server } = require("socket.io");
 const app = express();
 const server = http.createServer(app);
 
-// ✅ Socket.IO setup
+// ✅ Socket.io setup
 const io = new Server(server, {
-  cors: { origin: "*" },
+  cors: {
+    origin: "*",
+  },
 });
+
 io.on("connection", (socket) => {
   console.log("New client connected:", socket.id);
 });
+
 app.set("io", io);
 
-// ✅ Allowed origins
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://luxury-alfajores-7049a1.netlify.app",
-  "https://fancy-faloodeh-dd879e.netlify.app"
-];
-
-// ✅ CORS middleware
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        console.log("❌ Blocked CORS request from:", origin);
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
-
-// ✅ Handle preflight (OPTIONS) requests
-app.options("*", cors());
-
 // ✅ Middlewares
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// ✅ Static folder for uploads
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // ✅ Routes
 const authRoutes = require("./routes/authRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const serviceRoutes = require("./routes/serviceRoute");
-const LaptopRoutes = require("./routes/LaptopRoute");
-const CctvRoutes = require("./routes/cctvRoutes");
-const UserProfileRoutes = require("./routes/userProfileRoutes");
-const userAddress = require("./routes/userAddressRoutes");
+const laptopRoutes = require("./routes/LaptopRoute");
+const cctvRoutes = require("./routes/cctvRoutes");
+const userProfileRoutes = require("./routes/userProfileRoutes");
+const userAddressRoutes = require("./routes/userAddressRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/service", serviceRoutes);
 app.use("/api/order", orderRoutes);
-app.use("/api/user", userAddress);
-app.use("/api/user", UserProfileRoutes);
-app.use("/api", LaptopRoutes);
-app.use("/api", CctvRoutes);
+app.use("/api/user", userAddressRoutes);
+app.use("/api/user", userProfileRoutes);
+app.use("/api", laptopRoutes);
+app.use("/api", cctvRoutes);
 
-// ✅ Root route (test)
+// ✅ Root test route
 app.get("/", (req, res) => {
-  res.send("✅ Backend is running successfully on Render!");
+  res.send("Backend is live 🚀");
 });
 
-// ✅ Database connection
+// ✅ Database connection and server start
 mongoose
-  .connect(process.env.MONGO_URI)
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => {
     const PORT = process.env.PORT || 5000;
-    server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+    // ✅ Important: use `server.listen`, not `app.listen`
+    server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   })
-  .catch((err) => console.error("❌ MongoDB Error:", err));
+  .catch((err) => console.error("MongoDB Error:", err));
