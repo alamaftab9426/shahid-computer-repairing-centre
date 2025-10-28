@@ -1,8 +1,8 @@
-// src/axiosInstance.js
-import axios from 'axios';
+import axios from "axios";
 
-const instance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL, // ya process.env.REACT_APP_API_URL
+const axiosInstance = axios.create({
+  baseURL: import.meta.env.VITE_API_URL, // ye line sahi honi chahiye
+  withCredentials: true,
 });
 
-export default instance;
+export default axiosInstance;

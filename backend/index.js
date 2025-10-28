@@ -56,8 +56,9 @@ app.get("/", (req, res) => {
 });
 
 app.use(cors({
-  origin: "https://shahidcomputer.netlify.app/",
-  credentials: true,
+  origin: ["https://shahidcomputer.netlify.app"],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
 }));
 
 app.use(express.json())
