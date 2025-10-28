@@ -9,7 +9,7 @@ const { Server } = require("socket.io");
 const app = express();
 const server = http.createServer(app);
 
-// Socket.IO
+// ✅ Socket.IO setup
 const io = new Server(server, {
   cors: { origin: "*" },
 });
@@ -18,34 +18,39 @@ io.on("connection", (socket) => {
 });
 app.set("io", io);
 
-// CORS Setup using .env
+// ✅ Allowed origins
 const allowedOrigins = [
   "http://localhost:5173",
   "https://luxury-alfajores-7049a1.netlify.app",
-  "https://fancy-faloodeh-dd879e.netlify.app"  // new Netlify site added
+  "https://fancy-faloodeh-dd879e.netlify.app"
 ];
 
-
+// ✅ CORS middleware
 app.use(
   cors({
     origin: function (origin, callback) {
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
+        console.log("❌ Blocked CORS request from:", origin);
         callback(new Error("Not allowed by CORS"));
       }
     },
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
 
+// ✅ Handle preflight (OPTIONS) requests
+app.options("*", cors());
 
-// Middlewares
+// ✅ Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-//Routes
+// ✅ Routes
 const authRoutes = require("./routes/authRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const serviceRoutes = require("./routes/serviceRoute");
@@ -64,16 +69,16 @@ app.use("/api/user", UserProfileRoutes);
 app.use("/api", LaptopRoutes);
 app.use("/api", CctvRoutes);
 
-// Test Route
+// ✅ Root route (test)
 app.get("/", (req, res) => {
-  res.send(" Server is running...");
+  res.send("✅ Backend is running successfully on Render!");
 });
 
-// Database connection
+// ✅ Database connection
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     const PORT = process.env.PORT || 5000;
-    server.listen(PORT, () => console.log(` Server running on port ${PORT}`));
+    server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
   })
-  .catch((err) => console.error(" MongoDB Error:", err));
+  .catch((err) => console.error("❌ MongoDB Error:", err));
