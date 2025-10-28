@@ -52,8 +52,15 @@ app.use("/api", cctvRoutes);
 
 // Root test route
 app.get("/", (req, res) => {
-  res.send("Backend is live 🚀");
+  res.send("Backend is live ");
 });
+
+app.use(cors({
+  origin: "https://shahidcomputer.netlify.app/",
+  credentials: true,
+}));
+
+app.use(express.json())
 
 //  Database connection and server start
 mongoose.connect(process.env.MONGO_URI)
