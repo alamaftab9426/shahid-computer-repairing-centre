@@ -32,7 +32,7 @@ const AdminLayout = () => {
     { label: "Address", icon: "ri-user-3-line", link: "/admin/address" },
     { label: "Services", icon: "ri-user-3-line", link: "/admin/services" },
     { label: "OldLaptop", icon: "ri-shopping-cart-line", link: "/admin/OldLaptop" },
-    { label: "Cctv Camera", icon: "ri-shopping-cart-line", link: "/admin/Cctv" },
+    { label: "CctvCamera", icon: "ri-shopping-cart-line", link: "/admin/Cctv" },
     { label: "Orders", icon: "ri-shape-line", link: "/admin/orders" },
     { label: "Payments", icon: "ri-money-dollar-circle-line", link: "/admin/payments" },
     { label: "Settings", icon: "ri-settings-3-line", link: "/admin/settings" },

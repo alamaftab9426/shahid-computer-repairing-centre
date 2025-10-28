@@ -23,7 +23,7 @@ import Customers from './components/Admin/Customers';
 import Address from './components/Admin/Address';
 import Services from './components/Admin/Services';
 
-import Cctv from './components/Admin/OldLaptop';
+import Cctv from './components/Admin/Cctv';
 import OldLaptop from "./components/Admin/OldLaptop";
 import Orders from './components/Admin/Order'
 
