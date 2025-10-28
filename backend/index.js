@@ -63,12 +63,3 @@ mongoose.connect(process.env.MONGO_URI)
     server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   })
   .catch((err) => console.error("MongoDB Error:", err));
-app.get("/test-db", async (req, res) => {
-  try {
-    const dbState = mongoose.connection.readyState;
-    // 1 = connected, 2 = connecting, 0 = disconnected
-    res.json({ message: "MongoDB Connection Status", state: dbState });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
