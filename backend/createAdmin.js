@@ -2,43 +2,53 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
 
-const User = require("./models/User"); // Adjust path if needed
+const User = require("./models/User"); // adjust path if needed
 
-//  FIXED: Use MONGO_URI (from your .env file)
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => {
-  console.log("MongoDB connected");
-  createAdmin();
-}).catch(err => {
-  console.error("DB error:", err);
-});
-
-async function createAdmin() {
-  const emailaddress = "admin@test.com";
-
-  const existing = await User.findOne({ emailaddress });
-  if (existing) {
-    console.log("Admin already exists");
+// ✅ Connect to MongoDB
+mongoose
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(async () => {
+    console.log(" MongoDB connected successfully");
+    await createAdmin();
     mongoose.disconnect();
-    return;
-  }
-
-  const hashedPassword = await bcrypt.hash("admin123", 10);
-
-  const admin = new User({
-    name: "Admin",
-    lastname: "User",
-    mobileno: 9999999999,
-    emailaddress,
-    password: hashedPassword,
-    gender: "male",
-    dob: new Date("1990-01-01"),
-    role: "admin"
+  })
+  .catch((err) => {
+    console.error(" DB connection error:", err);
   });
 
-  await admin.save();
-  console.log("Admin created successfully");
-  mongoose.disconnect();
+// Create admin user function
+async function createAdmin() {
+  try {
+    const emailaddress = "admin@test.com";
+
+    // check if admin already exists
+    const existing = await User.findOne({ emailaddress });
+    if (existing) {
+      console.log(" Admin already exists in database");
+      return;
+    }
+
+    // hash password
+    const hashedPassword = await bcrypt.hash("admin123", 10);
+
+    // create new admin
+    const admin = new User({
+      name: "Admin",
+      lastname: "User",
+      mobileno: 9999999999,
+      emailaddress,
+      password: hashedPassword,
+      gender: "male",
+      dob: new Date("1990-01-01"),
+      role: "admin",
+    });
+
+    await admin.save();
+    console.log(" Admin created successfully");
+  } catch (err) {
+    console.error(" Error creating admin:", err);
+  }
 }
