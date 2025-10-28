@@ -41,6 +41,7 @@ const userAddressRoutes = require("./routes/userAddressRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 
 app.use("/api/auth", authRoutes);
+
 app.use("/api/admin", adminRoutes);
 app.use("/api/service", serviceRoutes);
 app.use("/api/order", orderRoutes);
@@ -55,14 +56,10 @@ app.get("/", (req, res) => {
 });
 
 //  Database connection and server start
-mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     const PORT = process.env.PORT || 5000;
-    //  Important: use `server.listen`, not `app.listen`
+    
     server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   })
   .catch((err) => console.error("MongoDB Error:", err));
