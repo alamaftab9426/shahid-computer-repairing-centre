@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
     default: 'user'
   },
   isActive: { type: Boolean, default: true },
-   // ----- NEW FIELDS FOR FORGOT PASSWORD -----
+  
 
   resetPasswordToken: { type: String },
   resetPasswordExpires: { type: Date }

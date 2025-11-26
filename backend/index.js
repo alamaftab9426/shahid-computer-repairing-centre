@@ -9,7 +9,7 @@ const { Server } = require("socket.io");
 const app = express();
 const server = http.createServer(app);
 
-//  Socket.io setup
+// Socket.io setup
 const io = new Server(server, {
   cors: {
     origin: "*",
@@ -22,17 +22,19 @@ io.on("connection", (socket) => {
 
 app.set("io", io);
 
-//  Middleware (keep CORS before routes)
-app.use(cors({
-  origin: ["https://shahidcomputer.netlify.app"],  // frontend
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true
-}));
+// CORS FIX for Railway
+app.use(
+  cors({
+    origin: ["https://shahidcomputer.netlify.app"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-//  Static folder
+// Static folder
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Routes
@@ -54,15 +56,22 @@ app.use("/api/user", userProfileRoutes);
 app.use("/api", laptopRoutes);
 app.use("/api", cctvRoutes);
 
-//  Root route for testing
+// Test route
 app.get("/", (req, res) => {
   res.send("Backend is live and connected!");
 });
 
-// MongoDB + Server start
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
-    const PORT = process.env.PORT || 5000;
-    server.listen(PORT, () => console.log(` Server running on port ${PORT}`));
+
+mongoose
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
   })
-  .catch((err) => console.error("MongoDB Error:", err));
+  .then(() => console.log("MongoDB connected successfully!"))
+  .catch((err) => console.log("MongoDB connection error:", err));
+
+const PORT = process.env.PORT || 5000;
+
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
